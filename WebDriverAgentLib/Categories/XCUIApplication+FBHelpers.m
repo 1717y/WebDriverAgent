@@ -63,12 +63,19 @@ const static NSTimeInterval FBMinimumAppSwitchWait = 3.0;
   info[@"frame"] = NSStringFromCGRect(snapshot.wdFrame);
   info[@"isEnabled"] = [@([snapshot isWDEnabled]) stringValue];
   info[@"isVisible"] = [@([snapshot isWDVisible]) stringValue];
+  
+  if (![info[@"isVisible"] boolValue]) {
+    return nil;
+  }
 
   NSArray *childElements = snapshot.children;
   if ([childElements count]) {
     info[@"children"] = [[NSMutableArray alloc] init];
     for (XCElementSnapshot *childSnapshot in childElements) {
-      [info[@"children"] addObject:[self dictionaryForElement:childSnapshot]];
+      NSDictionary *childInfo = [self dictionaryForElement:childSnapshot];
+      if (childInfo) {
+        [info[@"children"] addObject:[self dictionaryForElement:childSnapshot]];
+      }
     }
   }
   return info;
